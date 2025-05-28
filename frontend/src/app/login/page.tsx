@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 import { useAuthStore } from '@/store/authStore';
-import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 
 export default function LoginPage() {
@@ -20,11 +19,12 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await api.post('/auth/login', { email, password });
-      const { token, user } = response.data;
-      
-      login(token, user);
-      router.push('/dashboard');
+      const success = await login({ email, password });
+      if (success) {
+        router.push('/dashboard');
+      } else {
+        toast.error('Login failed. Please check your credentials.');
+      }
     } catch {
       toast.error('Login failed. Please check your credentials.');
     } finally {
