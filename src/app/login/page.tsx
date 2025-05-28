@@ -21,7 +21,7 @@ export default function LoginPage() {
 
     try {
       const response = await api.post('/auth/login', { email, password });
-      const { token, user } = response.data;
+      const { token, user } = response.data as { token: string; user: any };
       
       login(token, user);
       router.push('/dashboard');
