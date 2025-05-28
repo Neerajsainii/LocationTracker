@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import { ApiResponse, LoginCredentials, RegisterData, User, Order } from '@/types';
 
 class ApiClient {
@@ -53,10 +53,11 @@ class ApiClient {
           user: {} as User // You'll need to decode the token or make another call to get user data
         }
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message: string }>;
       return {
         success: false,
-        error: error.response?.data?.message || 'Login failed'
+        error: axiosError.response?.data?.message || 'Login failed'
       };
     }
   }
@@ -71,10 +72,11 @@ class ApiClient {
           user: {} as User // You'll need to decode the token or make another call to get user data
         }
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message: string }>;
       return {
         success: false,
-        error: error.response?.data?.message || 'Registration failed'
+        error: axiosError.response?.data?.message || 'Registration failed'
       };
     }
   }
@@ -87,10 +89,11 @@ class ApiClient {
         success: true,
         data: response.data
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message: string }>;
       return {
         success: false,
-        error: error.response?.data?.message || 'Failed to fetch orders'
+        error: axiosError.response?.data?.message || 'Failed to fetch orders'
       };
     }
   }
@@ -102,10 +105,11 @@ class ApiClient {
         success: true,
         data: response.data
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message: string }>;
       return {
         success: false,
-        error: error.response?.data?.message || 'Failed to create order'
+        error: axiosError.response?.data?.message || 'Failed to create order'
       };
     }
   }
@@ -117,10 +121,11 @@ class ApiClient {
         success: true,
         data: response.data
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message: string }>;
       return {
         success: false,
-        error: error.response?.data?.message || 'Failed to update order'
+        error: axiosError.response?.data?.message || 'Failed to update order'
       };
     }
   }
@@ -132,10 +137,11 @@ class ApiClient {
         success: true,
         data: response.data
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message: string }>;
       return {
         success: false,
-        error: error.response?.data?.message || 'Failed to fetch order'
+        error: axiosError.response?.data?.message || 'Failed to fetch order'
       };
     }
   }
@@ -148,10 +154,11 @@ class ApiClient {
         success: true,
         data: response.data
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message: string }>;
       return {
         success: false,
-        error: error.response?.data?.message || 'Failed to fetch user data'
+        error: axiosError.response?.data?.message || 'Failed to fetch user data'
       };
     }
   }
@@ -163,10 +170,11 @@ class ApiClient {
         success: true,
         data: response.data
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message: string }>;
       return {
         success: false,
-        error: error.response?.data?.message || 'Failed to update profile'
+        error: axiosError.response?.data?.message || 'Failed to update profile'
       };
     }
   }
@@ -178,15 +186,34 @@ class ApiClient {
       return {
         success: true
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message: string }>;
       return {
         success: false,
-        error: error.response?.data?.message || 'Failed to update location'
+        error: axiosError.response?.data?.message || 'Failed to update location'
       };
     }
+  }
+
+  // Generic HTTP methods for direct access
+  async get<T>(url: string): Promise<AxiosResponse<T>> {
+    return this.client.get<T>(url);
+  }
+
+  async post<T>(url: string, data?: unknown): Promise<AxiosResponse<T>> {
+    return this.client.post<T>(url, data);
+  }
+
+  async put<T>(url: string, data?: unknown): Promise<AxiosResponse<T>> {
+    return this.client.put<T>(url, data);
+  }
+
+  async delete<T>(url: string): Promise<AxiosResponse<T>> {
+    return this.client.delete<T>(url);
   }
 }
 
 // Create and export a singleton instance
 export const apiClient = new ApiClient();
+export const api = apiClient; // For backward compatibility
 export default apiClient; 
